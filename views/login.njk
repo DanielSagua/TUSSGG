@@ -1,0 +1,38 @@
+{% extends "layouts/main.njk" %}
+{% set publicLayout = true %}
+{% set title = "Login - Trabajos Urgentes SSGG" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h1 class="h5 mb-3">Ingreso</h1>
+
+        {% if expired %}
+          <div class="alert alert-warning small">Tu sesión expiró por inactividad. Inicia sesión nuevamente.</div>
+        {% endif %}
+
+        <form id="form-login" novalidate>
+          <div class="mb-3">
+            <label class="form-label">Clave</label>
+            <input id="clave" name="clave" type="password" class="form-control" required autocomplete="current-password" />
+            <div class="invalid-feedback">Debes ingresar la clave.</div>
+          </div>
+
+          <button id="btn-login" class="btn btn-primary w-100" type="submit">
+            <span class="spinner-border spinner-border-sm me-2 d-none" id="spinner-login" aria-hidden="true"></span>
+            Ingresar
+          </button>
+        </form>
+
+        <p class="text-muted small mt-3 mb-0">App interna • Servicios Generales</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/js/login.js"></script>
+{% endblock %}

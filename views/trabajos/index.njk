@@ -1,0 +1,100 @@
+{% extends "layouts/main.njk" %}
+{% set title = "Listado - Trabajos Urgentes SSGG" %}
+
+{% block content %}
+<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h4 mb-0">Trabajos</h1>
+    <div class="text-muted small">Búsqueda y filtros en tiempo real</div>
+  </div>
+  <a class="btn btn-primary" href="/trabajos/nuevo">+ Nuevo trabajo</a>
+</div>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <form id="filters" class="row g-2 align-items-end">
+      <div class="col-12 col-lg-3">
+        <label class="form-label small">Buscar</label>
+        <input class="form-control" name="search" placeholder="Descripción, proveedor, OC, solicitado por..." />
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <label class="form-label small">Estado</label>
+        <select class="form-select" name="estado">
+          <option value="">Todos</option>
+          {% for e in estados %}
+            <option value="{{ e.id }}">{{ e.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <label class="form-label small">Tipo</label>
+        <select class="form-select" name="tipo">
+          <option value="">Todos</option>
+          {% for t in tipos %}
+            <option value="{{ t.id }}">{{ t.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-12 col-lg-3">
+        <label class="form-label small">Ubicación</label>
+        <select class="form-select" name="ubicacion">
+          <option value="">Todas</option>
+          {% for u in ubicaciones %}
+            <option value="{{ u.id }}">{{ u.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-6 col-lg-1">
+        <label class="form-label small">Desde</label>
+        <input type="date" class="form-control" name="from" />
+      </div>
+      <div class="col-6 col-lg-1">
+        <label class="form-label small">Hasta</label>
+        <input type="date" class="form-control" name="to" />
+      </div>
+
+      <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-clear">Limpiar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <div class="text-muted small" id="meta"></div>
+      <div class="text-muted small" id="loading" style="display:none;">
+        <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span> Cargando...
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th style="width: 90px;">ID</th>
+            <th style="width: 170px;">Fecha</th>
+            <th>Descripción</th>
+            <th style="width: 140px;">Estado</th>
+            <th style="width: 160px;">Tipo</th>
+            <th style="width: 200px;">Ubicación</th>
+            <th style="width: 90px;"></th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="7" class="text-muted">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/js/trabajos.js"></script>
+{% endblock %}

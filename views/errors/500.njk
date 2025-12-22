@@ -1,0 +1,11 @@
+{% extends "layouts/main.njk" %}
+{% set title = "500" %}
+{% set publicLayout = true %}
+
+{% block content %}
+<div class="text-center py-5">
+  <h1 class="display-6">Error</h1>
+  <p class="text-muted">{{ message or "Ocurrió un error inesperado." }}</p>
+  <a class="btn btn-primary" href="/trabajos">Ir al listado</a>
+</div>
+{% endblock %}

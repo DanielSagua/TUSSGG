@@ -1,0 +1,26 @@
+{
+  "name": "trabajos-urgentes-ssgg",
+  "version": "1.0.0",
+  "description": "App interna para registrar trabajos urgentes de Servicios Generales (SSGG).",
+  "main": "app.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.1",
+    "helmet": "^7.1.0",
+    "luxon": "^3.5.0",
+    "mssql": "^10.0.4",
+    "multer": "^1.4.5-lts.1",
+    "nunjucks": "^3.2.4",
+    "exceljs": "^4.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}

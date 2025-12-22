@@ -1,0 +1,177 @@
+{% extends "layouts/main.njk" %}
+{% set title = "Detalle - Trabajos Urgentes SSGG" %}
+
+{% block content %}
+<div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h4 mb-0">Detalle trabajo #<span id="job-id">{{ trabajoId }}</span></h1>
+    <div class="text-muted small" id="job-subtitle">Cargando...</div>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="/trabajos">Volver</a>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h6 mb-3">Datos</h2>
+
+        <form id="form-editar" class="row g-3" novalidate>
+          <input type="hidden" name="id" value="{{ trabajoId }}" />
+
+          <div class="col-12 col-md-6">
+            <label class="form-label">Creado por (nombre)</label>
+            <input class="form-control" name="creado_por_nombre" maxlength="100" />
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label">Creado por (correo)</label>
+            <input class="form-control" name="creado_por_correo" type="email" maxlength="150" />
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label">Proveedor</label>
+            <input class="form-control" name="proveedor" maxlength="150" />
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label">Orden de compra</label>
+            <input class="form-control" name="orden_compra" maxlength="50" />
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Descripción <span class="text-danger">*</span></label>
+            <textarea class="form-control" name="descripcion" rows="3" required></textarea>
+            <div class="invalid-feedback">La descripción es obligatoria.</div>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Ubicación <span class="text-danger">*</span></label>
+            <select class="form-select" name="ubicacion_id" required>
+              <option value="">Selecciona...</option>
+              {% for u in ubicaciones %}
+                <option value="{{ u.id }}">{{ u.nombre }}</option>
+              {% endfor %}
+            </select>
+            <div class="invalid-feedback">Selecciona una ubicación.</div>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Tipo <span class="text-danger">*</span></label>
+            <select class="form-select" name="tipo_id" required>
+              <option value="">Selecciona...</option>
+              {% for t in tipos %}
+                <option value="{{ t.id }}">{{ t.nombre }}</option>
+              {% endfor %}
+            </select>
+            <div class="invalid-feedback">Selecciona un tipo.</div>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Estado</label>
+            <select class="form-select" name="estado_id" required>
+              <option value="">Selecciona...</option>
+              {% for e in estados %}
+                <option value="{{ e.id }}">{{ e.nombre }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Valor neto</label>
+            <input class="form-control" name="valor_neto" inputmode="decimal" placeholder="Ej: 150000" />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Fecha reparación</label>
+            <input class="form-control" name="fecha_reparacion" type="date" />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Solicitado por</label>
+            <input class="form-control" name="solicitado_por" maxlength="100" />
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Observaciones</label>
+            <textarea class="form-control" name="observaciones" rows="2"></textarea>
+          </div>
+
+          <div class="col-12 d-flex justify-content-end gap-2">
+            <button id="btn-guardar" type="submit" class="btn btn-primary">
+              <span class="spinner-border spinner-border-sm me-2 d-none" id="spinner-guardar" aria-hidden="true"></span>
+              Guardar cambios
+            </button>
+          </div>
+        </form>
+
+        <hr class="my-3" />
+
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3 class="h6 mb-0">Estado rápido</h3>
+            <div class="text-muted small" id="estado-actual">—</div>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm" data-estado="Pendiente">Pendiente</button>
+            <button class="btn btn-outline-primary btn-sm" data-estado="En curso">En curso</button>
+            <button class="btn btn-outline-success btn-sm" data-estado="Cerrado">Cerrado</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-5">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <h2 class="h6 mb-3">Galería</h2>
+
+        <div id="gallery" class="row g-2">
+          <div class="col-12 text-muted">Cargando...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h6 mb-3">Subir nuevos adjuntos</h2>
+
+        <form id="form-adjuntos" class="row g-3" enctype="multipart/form-data">
+          <div class="col-12">
+            <label class="form-label">Imagen antes (0..2)</label>
+            <input class="form-control" name="antes" type="file" accept="image/jpeg,image/png,image/webp" multiple />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Imagen después (0..2)</label>
+            <input class="form-control" name="despues" type="file" accept="image/jpeg,image/png,image/webp" multiple />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Evidencias (0..N)</label>
+            <input class="form-control" name="evidencia" type="file" accept="image/jpeg,image/png,image/webp" multiple />
+          </div>
+
+          <div class="col-12 d-flex justify-content-end">
+            <button id="btn-subir" class="btn btn-primary" type="submit">
+              <span class="spinner-border spinner-border-sm me-2 d-none" id="spinner-subir" aria-hidden="true"></span>
+              Subir
+            </button>
+          </div>
+        </form>
+
+        <div class="form-text mt-2">Tipos permitidos: jpg/png/webp. Máx 5MB por archivo.</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.__TRABAJO_ID__ = "{{ trabajoId }}";
+</script>
+<script src="/js/detalle.js"></script>
+{% endblock %}
