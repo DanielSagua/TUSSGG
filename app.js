@@ -84,6 +84,9 @@ app.use((req, res, next) => {
   res.locals.isAuthenticated = !!(req.session && req.session.authenticated);
   res.locals.currentYear = new Date().getFullYear();
 
+  // ✅ Nombre de la app (para navbar/títulos/footer)
+  res.locals.appName = process.env.APP_NAME || 'TUSSGG';
+
   // Defaults (prefill / auditoría)
   res.locals.DEFAULT_CREADO_POR_NOMBRE = process.env.DEFAULT_CREADO_POR_NOMBRE || '';
   res.locals.DEFAULT_CREADO_POR_CORREO = process.env.DEFAULT_CREADO_POR_CORREO || '';
