@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const subtitle = qs('#job-subtitle');
   const estadoActual = qs('#estado-actual');
   const gallery = qs('#gallery');
+  const lblFechaObjetivo = qs('#lbl-fecha-objetivo');
 
   const formEditar = qs('#form-editar');
   const btnGuardar = qs('#btn-guardar');
@@ -30,11 +31,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       setVal('tipo_id', t.tipo_id);
       setVal('estado_id', t.estado_id);
       setVal('valor_neto', t.valor_neto);
-      setVal('fecha_reparacion', t.fecha_reparacion ? String(t.fecha_reparacion).slice(0,10) : '');
+      setVal('fecha_reparacion', t.fecha_reparacion ? String(t.fecha_reparacion).slice(0, 10) : '');
       setVal('solicitado_por', t.solicitado_por);
       setVal('observaciones', t.observaciones);
       setVal('prioridad_id', t.prioridad_id);
-      setVal('fecha_objetivo', t.fecha_objetivo ? String(t.fecha_objetivo).slice(0,10) : '');
+      setVal('fecha_objetivo', t.fecha_objetivo ? String(t.fecha_objetivo).slice(0, 10) : '');
+      if (lblFechaObjetivo) {
+        lblFechaObjetivo.textContent =
+          t.fecha_objetivo_str ||
+          (t.fecha_objetivo ? String(t.fecha_objetivo).slice(0, 10) : '—');
+      }
+
       setVal('responsable_nombre', t.responsable_nombre);
       setVal('responsable_correo', t.responsable_correo);
 
@@ -100,25 +107,25 @@ document.addEventListener('DOMContentLoaded', async () => {
       .replaceAll("'", '&#039;');
   }
 
-// Comentarios
-const formComentario = qs('#form-comentario');
-const inputComentario = qs('#comentario-texto');
-const btnComentar = qs('#btn-comentar');
-const spComentar = qs('#spinner-comentar');
-const boxComentarios = qs('#comentarios');
+  // Comentarios
+  const formComentario = qs('#form-comentario');
+  const inputComentario = qs('#comentario-texto');
+  const btnComentar = qs('#btn-comentar');
+  const spComentar = qs('#spinner-comentar');
+  const boxComentarios = qs('#comentarios');
 
-// Bitácora
-const boxLogs = qs('#logs');
+  // Bitácora
+  const boxLogs = qs('#logs');
 
-async function loadComentarios() {
-  if (!boxComentarios) return;
-  const res = await fetchJson(`/api/trabajos/${id}/comentarios`);
-  const items = res.data || [];
-  if (!items.length) {
-    boxComentarios.innerHTML = `<div class="text-muted">Sin comentarios.</div>`;
-    return;
-  }
-  boxComentarios.innerHTML = items.map(c => `
+  async function loadComentarios() {
+    if (!boxComentarios) return;
+    const res = await fetchJson(`/api/trabajos/${id}/comentarios`);
+    const items = res.data || [];
+    if (!items.length) {
+      boxComentarios.innerHTML = `<div class="text-muted">Sin comentarios.</div>`;
+      return;
+    }
+    boxComentarios.innerHTML = items.map(c => `
     <div class="border rounded-3 p-2 bg-white">
       <div class="d-flex justify-content-between align-items-center">
         <div class="small text-muted">
@@ -130,33 +137,33 @@ async function loadComentarios() {
     </div>
   `).join('');
 
-  qsa('button[data-del-com]', boxComentarios).forEach(b => {
-    b.addEventListener('click', async () => {
-      const cid = Number(b.getAttribute('data-del-com'));
-      if (!confirm('¿Eliminar comentario?')) return;
-      b.disabled = true;
-      try {
-        await fetchJson(`/api/comentarios/${cid}`, { method: 'DELETE' });
-        showToast('OK', 'Comentario eliminado.');
-        await loadComentarios();
-        await loadLogs();
-      } catch (err) {
-        showToast('Error', err.message || 'No se pudo eliminar.');
-        b.disabled = false;
-      }
+    qsa('button[data-del-com]', boxComentarios).forEach(b => {
+      b.addEventListener('click', async () => {
+        const cid = Number(b.getAttribute('data-del-com'));
+        if (!confirm('¿Eliminar comentario?')) return;
+        b.disabled = true;
+        try {
+          await fetchJson(`/api/comentarios/${cid}`, { method: 'DELETE' });
+          showToast('OK', 'Comentario eliminado.');
+          await loadComentarios();
+          await loadLogs();
+        } catch (err) {
+          showToast('Error', err.message || 'No se pudo eliminar.');
+          b.disabled = false;
+        }
+      });
     });
-  });
-}
-
-async function loadLogs() {
-  if (!boxLogs) return;
-  const res = await fetchJson(`/api/trabajos/${id}/logs`);
-  const items = res.data || [];
-  if (!items.length) {
-    boxLogs.innerHTML = `<div class="text-muted">Sin registros.</div>`;
-    return;
   }
-  boxLogs.innerHTML = items.map(l => `
+
+  async function loadLogs() {
+    if (!boxLogs) return;
+    const res = await fetchJson(`/api/trabajos/${id}/logs`);
+    const items = res.data || [];
+    if (!items.length) {
+      boxLogs.innerHTML = `<div class="text-muted">Sin registros.</div>`;
+      return;
+    }
+    boxLogs.innerHTML = items.map(l => `
     <div class="border rounded-3 p-2 bg-white">
       <div class="d-flex justify-content-between align-items-center">
         <div class="small">
@@ -168,35 +175,35 @@ async function loadLogs() {
       ${l.detalle_json ? `<pre class="mt-2 mb-0 small text-muted" style="white-space: pre-wrap;">${escapeHtml(JSON.stringify(l.detalle_json, null, 2))}</pre>` : ''}
     </div>
   `).join('');
-}
+  }
 
-if (formComentario) {
-  formComentario.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const txt = (inputComentario?.value || '').trim();
-    if (!txt) return;
+  if (formComentario) {
+    formComentario.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const txt = (inputComentario?.value || '').trim();
+      if (!txt) return;
 
-    btnComentar.disabled = true;
-    spComentar.classList.remove('d-none');
+      btnComentar.disabled = true;
+      spComentar.classList.remove('d-none');
 
-    try {
-      await fetchJson(`/api/trabajos/${id}/comentarios`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ comentario: txt })
-      });
-      inputComentario.value = '';
-      await loadComentarios();
-      await loadLogs();
-      showToast('OK', 'Comentario agregado.');
-    } catch (err) {
-      showToast('Error', err.message || 'No se pudo agregar.');
-    } finally {
-      btnComentar.disabled = false;
-      spComentar.classList.add('d-none');
-    }
-  });
-}
+      try {
+        await fetchJson(`/api/trabajos/${id}/comentarios`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ comentario: txt })
+        });
+        inputComentario.value = '';
+        await loadComentarios();
+        await loadLogs();
+        showToast('OK', 'Comentario agregado.');
+      } catch (err) {
+        showToast('Error', err.message || 'No se pudo agregar.');
+      } finally {
+        btnComentar.disabled = false;
+        spComentar.classList.add('d-none');
+      }
+    });
+  }
 
   // Guardar cambios
   formEditar.addEventListener('submit', async (e) => {

@@ -2,9 +2,15 @@
   --brand: #0d6efd; /* Bootstrap primary */
 }
 
-body {
+/* body {
   background: #f7f8fb;
+} */
+
+body {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
 }
+
 
 .card {
   border-radius: 14px;
@@ -28,4 +34,14 @@ body {
 
 .small-muted {
   color: rgba(255,255,255,.75);
+}
+
+
+.card, .modal-content, .dropdown-menu {
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+.table {
+  color: var(--bs-body-color);
 }
